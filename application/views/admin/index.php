@@ -40,34 +40,10 @@ if(($this->session->userdata('category')== '0') || ($this->session->userdata('ca
         <div class="col-md-12 pt-4">
             <table class="table"  id="listShow">
                 <tbody>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                    <?php
-
-					$i	=	1;
-                    if(!empty($data))
-                    {
-                        foreach($data as $row)
-                        {
-                            $data['row']    =   $row;
-                            $this->load->view('admin/row.php',$data);
-                        }
-                    }
-                    else
-                    {
-                        ?>
-                        <tr>
-                            <td>Record not found.</td>
-                        </tr>
-                        <?php
-                    }
-					?>
+                    <div class="table-responsive" id="country_table"></div>
                 </tbody>
             </table>
+            <ul style =" display:block;float:right;" class="pagination" id="pagination_link"></ul>
         </div>
     </div>
 </div>
@@ -111,7 +87,34 @@ if(($this->session->userdata('category')== '0') || ($this->session->userdata('ca
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 <script>
-    
+    $(document).ready(function(){
+
+        function load_country_data(page)
+        {
+            $.ajax({
+                url:"<?php echo base_url(); ?>admin/pagination/"+page,
+                method:"GET",
+                dataType:"json",
+                success:function(data)
+                {
+                    $('#country_table').html(data.country_table);
+                    $('#pagination_link').html(data.pagination_link);
+                }
+            });
+        }
+
+        load_country_data(1);
+
+        $(document).on("click", ".pagination li a", function(event){
+            event.preventDefault();
+            var page = $(this).data("ci-pagination-page");
+            load_country_data(page);
+        });
+
+    });
+
+
+
 	function showUserModal()
     {
         $('#userAddModal').modal('show');
@@ -190,7 +193,6 @@ if(($this->session->userdata('category')== '0') || ($this->session->userdata('ca
                     }
                     else
                     {
-                        alert($('#passwordErr').html(response['password']));
                         $("#row-"+id+" .modelCategory").html('Customer');
                     }
                }

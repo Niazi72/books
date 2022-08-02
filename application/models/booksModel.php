@@ -13,10 +13,10 @@ class booksModel extends CI_Model {
 		return $id	=	$this->db->insert_id();
 	}
 	function count_all()
- {
-  $query = $this->db->get("ci_books_ajax");
-  return $query->num_rows();
- }
+	{
+	$query = $this->db->get("ci_books_ajax");
+	return $query->num_rows();
+	}
 
  function fetch_details($limit, $start)
  {

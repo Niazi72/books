@@ -8,6 +8,9 @@ class admin extends CI_Controller {
 		$this->load->model('adminModel');
 		$this->load->library('form_validation');
 		$this->load->library("encryption");
+		
+		$this->load->library("pagination");
+		$this->load->helper("url");
         $this->logged_in();
     }
     private function logged_in() {
@@ -15,12 +18,49 @@ class admin extends CI_Controller {
             $this->load->view('userlogin/login');
         }
     }
+	function pagination()
+	{
+		$config = array();
+		$config["base_url"] = "#";
+		$config["total_rows"] = $this->adminModel->count_all();
+		$config["per_page"] = 5;
+		$config["uri_segment"] = 3;
+		$config["use_page_numbers"] = TRUE;
+		$config['full_tag_open'] = '<ul class="pagination">';        
+		$config['full_tag_close'] = '</ul>';        
+		$config['first_link'] = 'First';        
+		$config['last_link'] = 'Last';        
+		$config['first_tag_open'] = '<li class="page-item"><span class="page-link">';        
+		$config['first_tag_close'] = '</span></li>';        
+		$config['prev_link'] = '&laquo';        
+		$config['prev_tag_open'] = '<li class="page-item"><span class="page-link">';        
+		$config['prev_tag_close'] = '</span></li>';        
+		$config['next_link'] = '&raquo';        
+		$config['next_tag_open'] = '<li class="page-item"><span class="page-link">';        
+		$config['next_tag_close'] = '</span></li>';        
+		$config['last_tag_open'] = '<li class="page-item"><span class="page-link">';        
+		$config['last_tag_close'] = '</span></li>';        
+		$config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';        
+		$config['cur_tag_close'] = '</a></li>';        
+		$config['num_tag_open'] = '<li class="page-item"><span class="page-link">';        
+		$config['num_tag_close'] = '</span></li>';
+		$config["num_links"] = 1;
+		$this->pagination->initialize($config);
+		$page = $this->uri->segment(3);
+		$start = ($page - 1) * $config["per_page"];
+	
+		$output = array(
+			'pagination_link'  => $this->pagination->create_links(),
+			'country_table'   => $this->adminModel->fetch_details($config["per_page"], $start)
+		);
+		echo json_encode($output);
+	}
     public function index()
 	{
 		if($this->session->userdata('authenticated')) {
-			$data				=	$this->adminModel->fetch_data();
-			$fetchData['data']	=	$data;
-			$this->load->view('admin/index.php',$fetchData);
+			//$data				=	$this->adminModel->fetch_data();
+			//$fetchData['data']	=	$data;
+			$this->load->view('admin/index.php');
 		}
 	}
 	public function showModal()
